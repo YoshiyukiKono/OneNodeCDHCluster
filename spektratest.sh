@@ -120,8 +120,14 @@ sed -i "s/YourCDSWDomain/cdsw.$PUBLIC_IP.nip.io/g" ~/OneNodeCDHCluster/$TEMPLATE
 sed -i "s/YourPrivateIP/`hostname -I | tr -d '[:space:]'`/g" ~/OneNodeCDHCluster/$TEMPLATE
 sed -i "s#YourDockerDevice#$DOCKERDEVICE#g" ~/OneNodeCDHCluster/$TEMPLATE
 
-sed -i "s/YourHostname/`hostname -f`/g" ~/OneNodeCDHCluster/scripts/create_cluster.py
+sed -i "s/YourHostname/`hostname -f`/g" ~/OneNodeCDHCluster/scripts/create_cluster_spektra.sh
 
-python ~/OneNodeCDHCluster/scripts/create_cluster.py $TEMPLATE
+# CM Agent setup 
+sed -i "s/.*server_host.*/server_host=`hostname -f`/g" /etc/cloudera-scm-agent/config.ini
+sed -i "s/.*reported_hostname.*/reported_hostname=`hostname -f`/g" /etc/cloudera-scm-agent/config.ini
+service cloudera-scm-agent restart
+
+
+python ~/OneNodeCDHCluster/scripts/create_cluster_spektra.sh $TEMPLATE
 
 service efm start
